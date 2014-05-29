@@ -8,8 +8,6 @@
 #define MOCKINGBIRD_H
 
 #include "version.h"
-#include "utils.h"
-#include "config.h"
 
 namespace mockingbird
 {

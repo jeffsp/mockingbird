@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace mockingbird
+namespace mbc
 {
 
 /// @brief read a configuration file

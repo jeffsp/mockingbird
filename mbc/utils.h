@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace mockingbird
+namespace mbc
 {
 
 template <typename T>

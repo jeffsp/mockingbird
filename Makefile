@@ -5,12 +5,10 @@
 BUILD=debug
 
 .SUFFIXES:
-.PHONY: waf run check clean debug release
+.PHONY: waf check clean run
 
 waf:
 	waf
-
-run: debug
 
 check: waf
 	$(MAKE) -C tests check
@@ -18,9 +16,5 @@ check: waf
 clean:
 	$(MAKE) -C tests clean
 
-debug: waf
-	./build/debug/mbc --help
-	./build/debug/mbc
-
-release:
-	$(MAKE) -C tests $(BUILD)
+run:
+	$(MAKE) BUILD=$(BUILD) -C mbc run

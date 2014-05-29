@@ -7,15 +7,10 @@
 BUILD=debug
 
 .SUFFIXES:
-.PHONY: default check clean debug release
+.PHONY: default check clean
 
 default: debug
 
-check: all
-	./test_python.py
+check: default
 
 clean:
-
-debug:
-
-release:
