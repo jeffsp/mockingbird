@@ -34,6 +34,7 @@ int main (int argc, char **argv)
         // initialize the state
         state s;
         clog << "scanning " << FILESPEC << endl;
+        s.set_image_filespec (FILESPEC);
         s.set_filenames (glob (FILESPEC));
         clog << "found " << s.get_filenames ().size () << " files" << endl;
 

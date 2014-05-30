@@ -28,15 +28,14 @@ T lexical_cast (const std::string &s)
     return v;
 }
 
-template<typename T>
-T prompt (std::ostream &os, std::istream &is, const std::string &txt, T def)
+std::string prompt (std::ostream &os, std::istream &is, const std::string &txt, const std::string &def)
 {
     os << txt << " [" << def << "]: " << std::flush;
     std::string tmp;
     std::getline (is, tmp);
     if (tmp.empty ())
         return def;
-    return lexical_cast<T> (tmp);
+    return tmp;
 }
 
 std::string exec (const std::string cmd)

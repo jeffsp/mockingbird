@@ -7,6 +7,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include "tab_prompt.h"
 #include "state.h"
 #include "utils.h"
 #include "version.h"
@@ -36,32 +37,40 @@ class console
     {
         return status;;
     }
-    void process (const state &s)
+    void process (state &s)
     {
-        const std::string commands = "q=quit h,?=help";
+        const std::string commands = "q=quit h,?=help c=imagespec";
 
-        std::string command;
-        while (command != "q")
+        std::string command = prompt (std::clog, std::cin, "command", "h");
+        std::clog << "command = " << command << std::endl;
+        if (command == "h" || command == "?")
+            std::clog << commands << std::endl;
+        else if (command == "c")
         {
-            command = prompt (std::clog, std::cin, "command", 'h');
-            std::clog << "command = " << command << std::endl;
-            if (command == "h" || command == "?")
-                std::clog << commands << std::endl;
-            else if (command == "l")
-            {
-                const int ret = system ("sh -i -c 'tree ../.. | more'");
-                if (ret != 0)
-                    std::clog << "system() failed" << std::endl;
-                //for (auto i : s.get_filenames ())
-                //    std::clog << i << std::endl;
-            }
-            else if (command == "q")
-            {
-                done = true;
-            }
-            else
-                std::clog << "unknown command: " << command << std::endl;
+            std::clog << "current: " << s.get_image_filespec () << std::endl;
+            std::string ifs = tab_prompt (">> ");
+            if (!ifs.empty ())
+                s.set_image_filespec (ifs);
+            std::clog << "new: " << s.get_image_filespec () << std::endl;
         }
+        else if (command == "l")
+        {
+            std::string cmd ("sh -i -c '");
+            cmd += "ls ";
+            cmd += s.get_image_filespec ();
+            cmd += "| more'";
+            const int ret = system (cmd.c_str ());
+            if (ret != 0)
+                std::clog << "system() failed" << std::endl;
+            //for (auto i : s.get_filenames ())
+            //    std::clog << i << std::endl;
+        }
+        else if (command == "q")
+        {
+            done = true;
+        }
+        else
+            std::clog << "unknown command: " << command << std::endl;
     }
 };
 
