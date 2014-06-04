@@ -16,3 +16,7 @@ clean:
 run: waf
 	./build/$(BUILD)/mbc --help
 	./build/$(BUILD)/mbc
+
+check:
+	./build/$(BUILD)/mbc --help
+	./build/$(BUILD)/mbc --file check.config

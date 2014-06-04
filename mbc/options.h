@@ -32,11 +32,18 @@ void show_options (std::ostream &os, const T &options)
     }
 }
 
-void parse (int argc, char **argv)
+struct cmdline_options
+{
+    std::string config_fn;
+    std::vector<std::string> left_over_opts;
+};
+
+cmdline_options parse (int argc, char **argv)
 {
     static struct option options[] =
     {
-        {"help", 0, 0, 'h'},
+        {"help", no_argument,       0, 'h'},
+        {"file", required_argument, 0, 'f'},
         {NULL, 0, NULL, 0}
     };
 
@@ -44,8 +51,10 @@ void parse (int argc, char **argv)
     int arg;
     int parsed_options = 0;
 
+    cmdline_options opts;
+
     // parse the options
-    while ((arg = getopt_long (argc, argv, "h", options, &option_index)) != -1)
+    while ((arg = getopt_long (argc, argv, "hf:", options, &option_index)) != -1)
     {
         switch (arg)
         {
@@ -55,6 +64,10 @@ void parse (int argc, char **argv)
             // throw main()'s return value
             throw -1;
 
+            case 'f':
+            opts.config_fn = std::string (optarg);
+            break;
+
             case 'h':
             help (std::clog);
             // throw main()'s return value
@@ -63,11 +76,9 @@ void parse (int argc, char **argv)
         ++parsed_options;
     };
 
-    std::vector<std::string> left_over_opts (&argv[parsed_options], &argv[argc]);
+    opts.left_over_opts = std::vector<std::string> (&argv[parsed_options], &argv[argc]);
 
-    // process left over options
-    for (auto i : left_over_opts)
-        std::clog << i << std::endl;
+    return opts;
 }
 
 };
