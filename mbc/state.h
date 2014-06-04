@@ -7,6 +7,7 @@
 #ifndef STATE_H
 #define STATE_H
 
+#include "utils.h"
 #include <string>
 #include <vector>
 
@@ -18,24 +19,31 @@ typedef std::vector<std::string> filenames;
 class state
 {
     private:
-    std::string image_filespec;
-    filenames fns;
+    filenames image_filenames;
+    size_t results_length;
     public:
+    state ()
+        : image_filenames ()
+        , results_length (10)
+    {
+    }
     void set_image_filespec (const std::string &image_filespec)
     {
-        this->image_filespec = image_filespec;
+        std::clog << "scanning " << image_filespec << std::endl;
+        image_filenames = glob (image_filespec);
+        std::clog << "found " << image_filenames.size () << " files" << std::endl;
     }
-    const std::string &get_image_filespec () const
+    const filenames &get_image_filenames () const
     {
-        return image_filespec;
+        return image_filenames;
     }
-    void set_filenames (const filenames &fns)
+    void set_results_length (const size_t n)
     {
-        this->fns = fns;
+        results_length = n;
     }
-    const filenames &get_filenames () const
+    size_t get_results_length () const
     {
-        return fns;
+        return results_length;
     }
 };
 
