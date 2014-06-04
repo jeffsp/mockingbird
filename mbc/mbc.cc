@@ -15,28 +15,34 @@ int main (int argc, char **argv)
     try
     {
         // parse the command line
-        try { parse (argc, argv); }
+        cmdline_options opts;
+        try { opts = parse (argc, argv); }
         catch (int ret) { return ret; }
-
-        // read the environment
-        const string EV = "MB_IMAGE_FILESPEC";
-        const string FILESPEC (getenv (EV.c_str ()) == 0 ? "." : getenv (EV.c_str ()));
-        clog << "In environment found " << EV << "=" << FILESPEC << endl;
 
         // read the config
         const string CONFIG_FN = ".mockingbirdrc";
-        const string cfgfn (string (getenv ("HOME")) + "/" + CONFIG_FN);
-        clog << "reading " << cfgfn << endl;
+        const string config_fn (string (getenv ("HOME")) + "/" + CONFIG_FN);
+        clog << "reading " << config_fn << endl;
         config cfg;
-        try { cfg.read (cfgfn); }
+        try { cfg.read (config_fn); }
         catch (const runtime_error &e) { clog << e.what () << endl; }
+
+        // read command line config, if specified
+        if (!opts.config_fn.empty ())
+        {
+            clog << "reading " << opts.config_fn << endl;
+            cfg.read (opts.config_fn);
+        }
 
         // initialize the state
         state s;
-        clog << "scanning " << FILESPEC << endl;
-        s.set_image_filespec (FILESPEC);
-        s.set_filenames (glob (FILESPEC));
-        clog << "found " << s.get_filenames ().size () << " files" << endl;
+        s.set_image_filespec (cfg.get_option ("IMAGE_FILESPEC"));
+        if (!cfg.get_option ("RESULTS_LENGTH").empty ())
+        {
+            std::clog << "config specified a results length of " << cfg.get_option ("RESULTS_LENGTH") << std::endl;
+            s.set_results_length (lexical_cast<size_t> (cfg.get_option ("RESULTS_LENGTH")));
+            std::clog << "results length set to " << s.get_results_length () << std::endl;
+        }
 
         // start the console
         console c;
