@@ -47,23 +47,22 @@ class console
             std::clog << commands << std::endl;
         else if (command == "c")
         {
-            std::clog << "current: " << s.get_image_filespec () << std::endl;
             std::string ifs = tab_prompt (">> ");
             if (!ifs.empty ())
                 s.set_image_filespec (ifs);
-            std::clog << "new: " << s.get_image_filespec () << std::endl;
         }
         else if (command == "l")
         {
-            std::string cmd ("sh -i -c '");
-            cmd += "ls ";
-            cmd += s.get_image_filespec ();
-            cmd += "| more'";
-            const int ret = system (cmd.c_str ());
-            if (ret != 0)
-                std::clog << "system() failed" << std::endl;
-            //for (auto i : s.get_filenames ())
-            //    std::clog << i << std::endl;
+            const std::vector<std::string> fns = s.get_image_filenames ();
+            for (size_t i = 0; i < fns.size (); ++i)
+            {
+                if (i + 2 < s.get_results_length ())
+                    std::clog << fns[i] << std::endl;
+                else if (i + 2 == s.get_results_length ())
+                    std::clog << "..." << std::endl;
+                else if (i + 1 == s.get_results_length ())
+                    std::clog << fns[i] << std::endl;
+            }
         }
         else if (command == "q")
         {
