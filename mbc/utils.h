@@ -28,9 +28,12 @@ T lexical_cast (const std::string &s)
     return v;
 }
 
-std::string prompt (std::ostream &os, std::istream &is, const std::string &txt, const std::string &def)
+std::string prompt (std::ostream &os, std::istream &is, const std::string &txt, const std::string &def = std::string (""))
 {
-    os << txt << " [" << def << "]: " << std::flush;
+    os << txt;
+    if (!def.empty ())
+        os << " [" << def << "]: ";
+    os << std::flush;
     std::string tmp;
     std::getline (is, tmp);
     if (tmp.empty ())
