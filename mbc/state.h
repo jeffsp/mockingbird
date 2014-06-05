@@ -21,10 +21,14 @@ class state
     private:
     filenames image_filenames;
     size_t results_length;
+    bool done;
+    int status;
     public:
     state ()
         : image_filenames ()
         , results_length (10)
+        , done (false)
+        , status (0)
     {
     }
     void set_image_filespec (const std::string &image_filespec)
@@ -44,6 +48,22 @@ class state
     size_t get_results_length () const
     {
         return results_length;
+    }
+    void set_done (bool d)
+    {
+        done = d;
+    }
+    bool is_done () const
+    {
+        return done;
+    }
+    void set_status (int s)
+    {
+        status = s;
+    }
+    int get_status () const
+    {
+        return status;
     }
 };
 

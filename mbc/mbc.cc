@@ -46,10 +46,10 @@ int main (int argc, char **argv)
 
         // start the console
         console c;
-        while (!c.is_done ())
+        while (!s.is_done ())
             c.process (s);
 
-        return c.exit_status ();
+        return s.get_status ();
     }
     catch (const exception &e)
     {
