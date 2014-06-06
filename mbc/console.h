@@ -8,10 +8,10 @@
 #define CONSOLE_H
 
 #include "command.h"
+#include "../mockingbird.h"
 #include "state.h"
 #include "tab_prompt.h"
 #include "utils.h"
-#include "version.h"
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -28,7 +28,7 @@ class console
     console ()
     {
         // show the version
-        std::clog << "mockingbird console version " << MAJOR_VERSION << "." << MINOR_VERSION << std::endl;
+        std::clog << "mockingbird version " << MAJOR_VERSION << "." << MINOR_VERSION << std::endl;
         // initialize the commands
         c["q"] = command ("q", "quit", [] (state &s) { s.set_status (0); s.set_done (true); });
         c["h"] = command ("h", "help", [&] (state &s) { help (); });
@@ -41,7 +41,7 @@ class console
         });
         c["l"] = command ("l", "list files", [] (state &s)
         {
-            const std::vector<std::string> fns = s.get_image_filenames ();
+            const std::vector<std::string> &fns = s.get_image_filenames ();
             for (size_t i = 0; i < fns.size (); ++i)
             {
                 if (i + 2 < s.get_results_length ())
@@ -52,11 +52,56 @@ class console
                     std::clog << fns[i] << std::endl;
             }
         });
+        c["n"] = command ("n", "read nef files", [] (state &s)
+        {
+            const std::vector<std::string> &fns = s.get_image_filenames ();
+            std::clog << "clearing gs16 buffers" << std::endl;
+            s.clear_gs16_images ();
+            for (size_t i = 0; i < fns.size (); ++i)
+            {
+                std::clog << "reading " << fns[i] << std::endl;
+                std::ifstream ifs (fns[i]);
+
+                if (!ifs)
+                {
+                    std::clog << "warning: can't read image" << std::endl;
+                    continue;
+                }
+
+                s.push_back (mockingbird::nef2bayer (ifs, std::clog));
+            }
+        });
+        c["d"] = command ("d", "plot distribution", [] (state &s)
+        {
+            // images
+            const std::vector<image16_t> imgs = s.get_gs16_images ();
+            // distribution
+            std::vector<unsigned short> d (1 << 16);
+            std::clog << "creating distribution" << std::endl;
+            // fill distribution
+            for (auto i : imgs)
+                for (auto j : i)
+                    ++d[j];
+            // write it to a file
+            const char *t = "/tmp/mbcdata.txt";
+            std::clog << "opening " << t << std::endl;
+            std::ofstream ofs (t);
+            if (!ofs)
+                throw std::runtime_error ("can't open temporary file for writing");
+            std::clog << "writing distribution" << std::endl;
+            int y = 0;
+            for (auto i : d)
+                ofs << y++ << ' ' << i << std::endl;
+            // plot it with a gnuplot system call
+            std::stringstream ss;
+            ss << "gnuplot -p -e \"plot '" << t << "' smooth freq with boxes\"";
+            std::clog << "executing " << ss.str () << std::endl;
+            const int ret = system (ss.str ().c_str ());
+            std::clog << "system returned " << ret << std::endl;
+        });
     }
     void process (state &s)
     {
-        const std::string commands = "q=quit h,?=help c=imagespec";
-
         std::string command = prompt (std::clog, std::cin, ">> ");
         if (c.find (command) == c.end ())
         {
