@@ -15,6 +15,7 @@ namespace mbc
 {
 
 typedef std::vector<std::string> filenames;
+typedef jack_rabbit::raster<unsigned short> image16_t;
 
 class state
 {
@@ -23,6 +24,7 @@ class state
     size_t results_length;
     bool done;
     int status;
+    std::vector<image16_t> gs16_images;
     public:
     state ()
         : image_filenames ()
@@ -64,6 +66,18 @@ class state
     int get_status () const
     {
         return status;
+    }
+    void clear_gs16_images ()
+    {
+        gs16_images.clear ();
+    }
+    void push_back (const image16_t &img)
+    {
+        gs16_images.push_back (img);
+    }
+    const std::vector<image16_t> &get_gs16_images () const
+    {
+        return gs16_images;
     }
 };
 
