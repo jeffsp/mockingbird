@@ -70,9 +70,8 @@ jack_rabbit::raster<unsigned short> nef2bayer (std::istream &ifs, std::ostream &
 /// @param p Bayer image
 /// @param ofs output file stream
 /// @param lfs log stream
-void write_bayer (const jack_rabbit::raster<unsigned short> &p, std::ostream &ofs, std::ostream &lfs)
+void write_bayer (const jack_rabbit::raster<unsigned short> &p, std::ostream &ofs)
 {
-    lfs << "writing image" << std::endl;
     // Write the header
     horny_toad::write_pnm_header (ofs, p.cols (), p.rows (), false, true);
     // Blast the whole buffer.  It is already in big endian order.
