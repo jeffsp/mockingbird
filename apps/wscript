@@ -11,7 +11,8 @@ out = 'build'
 # global definitions
 SOURCES='*.cc'
 CXXFLAGS=['-fopenmp','-Wall','-std=c++0x']
-LIBS=['gomp','rt','boost_filesystem','boost_system']
+INCLUDES='.. ../../horny_toad ../../jack_rabbit'
+LIBS=['gomp','rt']
 
 # variant specific build flags
 DEBUG_CXXFLAGS=CXXFLAGS+['-g']
@@ -57,4 +58,4 @@ def build(ctx):
     else:
         # the executable name is the filename without the extension
         for s in ctx.env.SOURCES:
-            ctx.program(source=s,target=s.replace('.cc',''),lib=LIBS)
+            ctx.program(source=s,target=s.replace('.cc',''),includes=INCLUDES,lib=LIBS)

@@ -7,10 +7,11 @@ BUILD=debug
 .SUFFIXES:
 .PHONY: waf check clean run
 
-waf:
-	waf
+default:
+	$(MAKE) -C mbc
+	$(MAKE) -C apps
 
-check: waf
+check:
 	$(MAKE) -C tests check
 
 clean:
