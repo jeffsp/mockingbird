@@ -1,7 +1,5 @@
 apps/.lock-waf_linux2_build
 apps/build/
-apps/cfa.h
-apps/cfainterp.cc
 mbc/.lock-waf_linux2_build
 mbc/build/
 images/
