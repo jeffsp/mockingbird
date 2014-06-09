@@ -9,3 +9,9 @@ BUILD=debug
 
 waf:
 	waf
+
+check:
+	./mkchains.py --help
+	./mkchains.py wc
+	./mkchains.py -f "../images/*.nef" --ext .pgm nef2bayer
+	./mkchains.py --dir /tmp --fs "../images/*.nef" --ext .ppm ./build/debug/nef2bayer ./build/debug/ahd_interpolate | xargs -P 12 --verbose -I{} sh -c {}
