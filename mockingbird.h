@@ -8,6 +8,7 @@
 #define MOCKINGBIRD_H
 
 #include "version.h"
+#include "cfa.h"
 #include "tiff.h"
 #include <horny_toad/horny_toad.h>
 #include <jack_rabbit/jack_rabbit.h>
@@ -18,13 +19,16 @@
 namespace mockingbird
 {
 
+/// @brief 16 bit grayscale image
+typedef jack_rabbit::raster<unsigned short> image_gs16_t;
+
 /// @brief convert an NEF format file to a Bayer image
 ///
 /// @param ifs input stream
 /// @param lfs log stream
 ///
 /// @return the Bayer image
-jack_rabbit::raster<unsigned short> nef2bayer (std::istream &ifs, std::ostream &lfs)
+image_gs16_t nef2bayer (std::istream &ifs, std::ostream &lfs)
 {
     lfs << "reading stdin" << std::endl;
     // An NEF file is a TIFF format file, but libtiff 3.6.2 cannot read NEF
@@ -49,7 +53,7 @@ jack_rabbit::raster<unsigned short> nef2bayer (std::istream &ifs, std::ostream &
         throw std::runtime_error ("unexpected height");
     // Skip to the data
     ifs.seekg (ifds[2].offset, std::ios::beg);
-    jack_rabbit::raster<unsigned short> p (ROWS, COLS);
+    image_gs16_t p (ROWS, COLS);
     lfs << "reading image" << std::endl;
     for (size_t i = 0; i < ROWS; ++i)
     {
@@ -65,12 +69,29 @@ jack_rabbit::raster<unsigned short> nef2bayer (std::istream &ifs, std::ostream &
     return p;
 }
 
-/// @brief write a bayer image to a file
+image_gs16_t bayer2rgba (const image_gs16_t &p)
+{
+    image_gs16_t q (p.rows (), p.cols () * 4);
+
+    // Convert from Bayer
+    for (size_t i = 0; i < p.rows (); ++i)
+    {
+        for (size_t j = 0; j < p.cols (); ++j)
+        {
+            unsigned offset = (i&1) + (j&1);
+            assert (offset < 3);
+            q (i, j * 4 + offset) = p (i, j);
+        }
+    }
+    return q;
+}
+
+/// @brief write a 16 bit grayscale image to a file
 ///
-/// @param p Bayer image
+/// @param p image
 /// @param ofs output file stream
 /// @param lfs log stream
-void write_bayer (const jack_rabbit::raster<unsigned short> &p, std::ostream &ofs)
+void write_gs16 (const image_gs16_t &p, std::ostream &ofs)
 {
     // Write the header
     horny_toad::write_pnm_header (ofs, p.cols (), p.rows (), false, true);
