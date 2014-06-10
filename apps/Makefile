@@ -10,6 +10,23 @@ BUILD=debug
 waf:
 	waf
 
+INSTALL_DIR=/usr/local/bin
+
+install: waf
+	sudo install -s -v \
+		./build/release/ahd_interpolate \
+		./build/release/nef2bayer \
+		$(INSTALL_DIR)
+	sudo install -v \
+		./mkchains.py \
+		$(INSTALL_DIR)
+
+uninstall:
+	sudo rm -f \
+		$(INSTALL_DIR)/ahd_interpolate \
+		$(INSTALL_DIR)/nef2bayer \
+		$(INSTALL_DIR)/mkchains.py
+
 check:
 	./mkchains.py --help
 	./mkchains.py wc
