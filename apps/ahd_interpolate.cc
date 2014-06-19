@@ -40,12 +40,6 @@ void process (int argc, char **)
     clog << "converting to RGB" << endl;
     p = mockingbird::convert_to_rgb (p);
 
-    clog << "converting to sRGB" << endl;
-    p = mockingbird::convert_to_sRGB (p);
-
-    clog << "normalizing" << endl;
-    p = mockingbird::normalize (p, 99.0);
-
     clog << "writing 16 bit RGB to stdout" << endl;
     write_pnm (cout, p.cols () / 3, p.rows (), p, true, true);
 }
