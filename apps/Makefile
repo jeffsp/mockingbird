@@ -16,6 +16,8 @@ install: waf
 	sudo install -s -v \
 		./build/release/ahd_interpolate \
 		./build/release/nef2bayer \
+		./build/release/normalize \
+		./build/release/srgb \
 		$(INSTALL_DIR)
 	sudo install -v \
 		./mkchains.py \
@@ -25,10 +27,18 @@ uninstall:
 	sudo rm -f \
 		$(INSTALL_DIR)/ahd_interpolate \
 		$(INSTALL_DIR)/nef2bayer \
+		$(INSTALL_DIR)/normalize \
+		$(INSTALL_DIR)/srgb \
 		$(INSTALL_DIR)/mkchains.py
 
 check:
 	./mkchains.py --help
 	./mkchains.py wc
 	./mkchains.py -f "../images/*.nef" --ext .pgm nef2bayer
-	./mkchains.py --dir /tmp --fs "../images/*.nef" --ext .ppm ./build/debug/nef2bayer ./build/debug/ahd_interpolate | xargs -P 12 --verbose -I{} sh -c {}
+	./mkchains.py --dir /tmp --fs "../images/*.nef" --ext .ppm \
+		./build/debug/nef2bayer \
+		./build/debug/ahd_interpolate \
+		./build/debug/srgb \
+		./build/debug/normalize \
+		| xargs -P 12 --verbose -I{} sh -c {}
+	display -gamma 2.2 /tmp/cps*.ppm
