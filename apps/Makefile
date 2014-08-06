@@ -31,7 +31,7 @@ uninstall:
 		$(INSTALL_DIR)/srgb \
 		$(INSTALL_DIR)/mkchains.py
 
-check:
+check: waf
 	./mkchains.py --help
 	./mkchains.py wc
 	./mkchains.py -f "../images/*.nef" --ext .pgm nef2bayer
@@ -40,5 +40,6 @@ check:
 		./build/debug/ahd_interpolate \
 		./build/debug/srgb \
 		./build/debug/normalize \
+		./build/debug/srgb_gamma \
 		| xargs -P 12 --verbose -I{} sh -c {}
-	display -gamma 2.2 /tmp/cps*.ppm
+	display /tmp/cps*.ppm
