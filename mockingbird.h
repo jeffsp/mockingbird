@@ -69,6 +69,11 @@ image_gs16_t nef2bayer (std::istream &ifs, std::ostream &lfs)
     return p;
 }
 
+/// @brief convert bayer image to rgba
+///
+/// @param p 16 bit image
+///
+/// @return rgba image
 image_gs16_t bayer2rgba (const image_gs16_t &p)
 {
     image_gs16_t q (p.rows (), p.cols () * 4);
